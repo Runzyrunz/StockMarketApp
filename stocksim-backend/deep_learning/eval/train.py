@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 
-def train_model(model, dataloader, num_epochs=10, learning_rate=0.0001):
+def train_model(model, dataloader, num_epochs=10, learning_rate=0.01):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
 
