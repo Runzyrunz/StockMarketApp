@@ -47,8 +47,8 @@ class StockDataset(Dataset):
             for i in range(len(ticker_data) - self.seq_len - self.predict_ahead):
                 X.append(ticker_data[i : i + self.seq_len])
 
-                price_today = ticker_data[i + self.seq_len - 1][3]  # Close price at the end of the sequence
-                price_next_week = ticker_data[i + self.seq_len + self.predict_ahead - 1][3]  # Close price next week
+                price_today = ticker_data[i + self.seq_len - 1][3] 
+                price_next_week = ticker_data[i + self.seq_len + self.predict_ahead - 1][3] 
 
                 gain = (price_next_week - price_today) / price_today
                 y.append(gain)
