@@ -8,7 +8,7 @@ dataset = StockDataset(tickers)
 
 model = GRU()
 
-dataloader = DataLoader(dataset, batch_size=64, shuffle=True, drop_last=True)
+dataloader = DataLoader(dataset, batch_size=128, shuffle=True, drop_last=True)
 print(len(dataloader))
 train_model(model, dataloader)
 

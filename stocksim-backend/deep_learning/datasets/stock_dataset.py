@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 
 class StockDataset(Dataset):
-    def __init__(self, tickers, seq_len=50, predict_ahead=7, start_date='2010-01-01', end_date='2023-12-31'):
+    def __init__(self, tickers, seq_len=50, predict_ahead=1, start_date='2010-01-01', end_date='2023-12-31'):
         self.seq_len = seq_len
         self.predict_ahead = predict_ahead
         self.data = self.download_data(tickers, start_date, end_date)
@@ -40,15 +40,15 @@ class StockDataset(Dataset):
 
     def prepare_sequences(self):
         X, y = [], []
-        
+    
         for ticker in self.data.columns.levels[0]:
             ticker_data = self.data[ticker][['Open', 'High', 'Low', 'Close', 'Volume']].values.astype(np.float32)
             
             for i in range(len(ticker_data) - self.seq_len - self.predict_ahead):
                 X.append(ticker_data[i : i + self.seq_len])
 
-                price_today = ticker_data[i + self.seq_len - 1][3]
-                price_next_week = ticker_data[i + self.seq_len + self.predict_ahead - 1][3]
+                price_today = ticker_data[i + self.seq_len - 1][3]  # Close price at the end of the sequence
+                price_next_week = ticker_data[i + self.seq_len + self.predict_ahead - 1][3]  # Close price next week
 
                 gain = (price_next_week - price_today) / price_today
                 y.append(gain)

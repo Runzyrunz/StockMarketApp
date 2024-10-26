@@ -6,17 +6,16 @@ def train_model(model, dataloader, num_epochs=200, learning_rate=0.0001):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
 
-    criterion = nn.MSELoss()
+    criterion = nn.HuberLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-
-    for epoch in range(num_epochs):
+    epoch_pbar = tqdm(range(num_epochs), desc='Training', unit='epoch')
+    
+    for epoch in epoch_pbar:
         model.train()
         total_loss = 0.0
+        batch_pbar = tqdm(dataloader, leave=False, desc=f'Epoch {epoch + 1}', unit='batch')
 
-        progress_bar = tqdm(dataloader, desc=f'Epoch [{epoch + 1}/{num_epochs}]', leave=False)
-
-        for X, y in dataloader:
-            
+        for X, y in batch_pbar:
             X, y = X.to(device), y.to(device)
 
             optimizer.zero_grad()
@@ -27,8 +26,7 @@ def train_model(model, dataloader, num_epochs=200, learning_rate=0.0001):
             optimizer.step()
 
             total_loss += loss.item()
+            batch_pbar.set_postfix({'batch_loss': f'{loss.item():.4f}'})
 
-            progress_bar.set_postfix(loss=loss.item())
-
-
-        print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {total_loss / len(dataloader):.4f}')
+        avg_loss = total_loss / len(dataloader)
+        print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}')
