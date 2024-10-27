@@ -7,9 +7,30 @@ const Chatbot = () => {
   ]);
   const [input, setInput] = useState('');
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+    
     setMessages([...messages, { user: 'me', text: input }]);
-    // Here you'd send 'input' to the LLM API, and get a response
+    
+    try {
+      // Send the input to the Flask backend
+      const response = await fetch('http://localhost:5000/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: input })
+      });
+
+      const data = await response.json();
+      const botResponse = data.answer || "Sorry, I couldn't understand that.";
+
+      // Add the bot's response to the chat
+      setMessages(prevMessages => [...prevMessages, { user: 'bot', text: botResponse }]);
+  } catch (error) {
+      console.error("Error fetching chatbot response:", error);
+      setMessages(prevMessages => [...prevMessages, { user: 'bot', text: "There was an error connecting to the server." }]);
+  }
+
+  // Clear the input field
     setInput('');
   };
 
