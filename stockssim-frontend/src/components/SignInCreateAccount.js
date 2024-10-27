@@ -1,43 +1,48 @@
-// src/components/SignInCreateAccount.js
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const SignInCreateAccount = () => {
-  const [isSigningIn, setIsSigningIn] = useState(true); // State to toggle between Sign In and Create Account
-
-  // Form fields
+  const [isSigningIn, setIsSigningIn] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Handle Sign In form submission
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
-    // Add your sign-in logic here
-    console.log('Signing in with:', email, password);
+    try {
+      const response = await axios.post('http://localhost:8000/api/sign-in/', { email, password });
+      alert(response.data.message || "Sign in successful");
+    } catch (error) {
+      alert(error.response?.data?.error || "Sign in failed. Please try again.");
+    }
   };
 
-  // Handle Create Account form submission
-  const handleCreateAccount = (e) => {
+  const handleCreateAccount = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Passwords don't match!");
       return;
     }
-    // Add your create account logic here
-    console.log('Creating account with:', email, password);
+    try {
+      const response = await axios.post('http://localhost:8000/api/create-account/', { email, password });
+      alert(response.data.message || "Account created successfully");
+      setIsSigningIn(true);
+    } catch (error) {
+      alert(error.response?.data?.error || "Account creation failed. Please try again.");
+    }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.toggleContainer}>
         <button
-          style={isSigningIn ? styles.activeToggle : styles.toggleButton}
+          style={isSigningIn ? { ...styles.toggleButton, ...styles.activeToggle } : styles.toggleButton}
           onClick={() => setIsSigningIn(true)}
         >
           Sign In
         </button>
         <button
-          style={!isSigningIn ? styles.activeToggle : styles.toggleButton}
+          style={!isSigningIn ? { ...styles.toggleButton, ...styles.activeToggle } : styles.toggleButton}
           onClick={() => setIsSigningIn(false)}
         >
           Create Account
@@ -45,53 +50,44 @@ const SignInCreateAccount = () => {
       </div>
 
       {isSigningIn ? (
-        // Sign In Form
         <form onSubmit={handleSignIn} style={styles.form}>
-          <h1>Sign In</h1>
           <input
             type="email"
-            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
+            placeholder="Email"
             style={styles.input}
           />
           <input
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+            placeholder="Password"
             style={styles.input}
           />
           <button type="submit" style={styles.button}>Sign In</button>
         </form>
       ) : (
-        // Create Account Form
         <form onSubmit={handleCreateAccount} style={styles.form}>
-          <h1>Create Account</h1>
           <input
             type="email"
-            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
+            placeholder="Email"
             style={styles.input}
           />
           <input
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+            placeholder="Password"
             style={styles.input}
           />
           <input
             type="password"
-            placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            required
+            placeholder="Confirm Password"
             style={styles.input}
           />
           <button type="submit" style={styles.button}>Create Account</button>
@@ -105,8 +101,11 @@ const styles = {
   container: {
     maxWidth: '400px',
     margin: '0 auto',
-    padding: '20px',
+    padding: '40px',
     textAlign: 'center',
+    backgroundColor: '#f9f9f9',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    borderRadius: '8px',
   },
   toggleContainer: {
     display: 'flex',
@@ -116,19 +115,17 @@ const styles = {
   toggleButton: {
     padding: '10px 20px',
     fontSize: '16px',
-    border: '1px solid #ccc',
     cursor: 'pointer',
-    backgroundColor: '#f0f0f0',
+    borderRadius: '5px',
     margin: '0 5px',
+    color: '#333',
+    backgroundColor: '#e0e0e0',
+    border: 'none',
+    outline: 'none',
   },
   activeToggle: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    border: '1px solid #4CAF50',
-    cursor: 'pointer',
     backgroundColor: '#4CAF50',
-    color: 'white',
-    margin: '0 5px',
+    color: '#fff',
   },
   form: {
     display: 'flex',
@@ -136,16 +133,20 @@ const styles = {
   },
   input: {
     margin: '10px 0',
-    padding: '10px',
+    padding: '12px',
     fontSize: '16px',
+    borderRadius: '5px',
     border: '1px solid #ccc',
   },
   button: {
-    padding: '10px',
+    padding: '12px',
     backgroundColor: '#4CAF50',
     color: '#fff',
     border: 'none',
     cursor: 'pointer',
+    borderRadius: '5px',
+    fontSize: '16px',
+    marginTop: '10px',
   },
 };
 
