@@ -14,7 +14,7 @@ const Chatbot = () => {
     
     try {
       // Send the input to the Flask backend
-      const response = await fetch('http://localhost:5000/chat', {
+      const response = await fetch('http://localhost:8000/api/chat/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question: input })
