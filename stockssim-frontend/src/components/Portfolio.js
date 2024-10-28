@@ -1,17 +1,27 @@
-// src/components/Portfolio.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 const Portfolio = () => {
-  const [portfolio] = useState([
-    { stock: 'AAPL', shares: 10, currentValue: 1500, gains: '+$200' },
-    { stock: 'TSLA', shares: 5, currentValue: 3600, gains: '+$300' },
-    { stock: 'AMZN', shares: 3, currentValue: 9900, gains: '+$400' },
-  ]);
+  const [portfolio, setPortfolio] = useState([]);
+  const [totalValue, setTotalValue] = useState(0);
 
-  const totalValue = portfolio.reduce((total, item) => total + item.currentValue, 0);
+  // Fetch portfolio data from the backend
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/portfolio/', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        setPortfolio(response.data.stocks);
+        setTotalValue(response.data.totalValue);
+      } catch (error) {
+        console.error("Error fetching portfolio:", error);
+      }
+    };
+    fetchPortfolio();
+  }, []);
 
-  // Mock data for the chart
   const performanceData = [
     { name: 'Week 1', value: 8000 },
     { name: 'Week 2', value: 8500 },
