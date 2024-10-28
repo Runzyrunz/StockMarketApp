@@ -39,3 +39,5 @@ def train_model(model, dataloader, num_epochs=10, learning_rate=0.01):
 
         avg_loss = total_loss / len(dataloader)
         print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}')
+
+    return model
