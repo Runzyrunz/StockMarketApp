@@ -21,3 +21,4 @@ class GRU(nn.Module):
         out = self.dropout(out[:, -1, :])
         out = self.fc(out)
         return out
+

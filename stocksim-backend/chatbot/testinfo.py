@@ -1,5 +1,7 @@
 # script to test the chat box functionality
 
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 from text_generator import process_question
 
 def test_process_question():
