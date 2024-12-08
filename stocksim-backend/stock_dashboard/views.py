@@ -1,4 +1,6 @@
-# views.py
+# written by: Renz Padlan
+# tested by: Renz Padlan
+# debugged by: Renz Padlan
 
 from django.http import JsonResponse
 import yfinance as yf

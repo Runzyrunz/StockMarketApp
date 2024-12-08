@@ -1,3 +1,7 @@
+# written by: Renz Padlan
+# tested by: Renz Padlan
+# debugged by: Renz Padlan
+
 # script to test the chat box functionality
 
 import os

@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# written by: Kevin Tran
+# tested by: Renz Padlan
+# debugged by: Renz Padlan
+
 """Django's command-line utility for administrative tasks."""
 import os
 import sys

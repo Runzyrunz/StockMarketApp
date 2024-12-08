@@ -1,3 +1,7 @@
+# written by: Renz Padlan
+# tested by: Renz Padlan
+# debugged by: Renz Padlan
+
 import torch.nn as nn
 import torch
 

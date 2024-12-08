@@ -8,6 +8,10 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
+
+# written by: Kevin Tran
+# tested by: Renz Padlan
+# debugged by: Renz Padlan
 """
 
 from pathlib import Path
@@ -41,6 +45,7 @@ INSTALLED_APPS = [
     'accounts',
     'corsheaders',
     'chatbot',
+    'deep_learning',
 ]
 
 MIDDLEWARE = [

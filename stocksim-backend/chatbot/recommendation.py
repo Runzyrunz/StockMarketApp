@@ -1,22 +1,16 @@
-# recommendation.py
+# written by: Renz Padlan
+# tested by: Renz Padlan
+# debugged by: Renz Padlan
 
 import torch
 import yfinance as yf
 import pandas as pd
 import numpy as np
 from typing import List, Tuple, Optional
+from .services import model_service  # Add this import
 
-def fetch_historical_data(ticker: str, period: str = "1y") -> pd.DataFrame:
-    """
-    Fetch historical stock data with error handling.
-    
-    Args:
-        ticker (str): Stock ticker symbol
-        period (str): Time period for historical data
-    
-    Returns:
-        pd.DataFrame: Historical stock data
-    """
+def fetch_historical_data(ticker: str, period: str = "1y") -> pd.DataFrame:   # Fetch historical stock data with error handling.
+  
     try:
         stock = yf.Ticker(ticker)
         data = stock.history(period=period)
@@ -52,8 +46,7 @@ def preprocess_data(data: pd.DataFrame) -> torch.Tensor:
         print(f"Error in preprocessing data: {str(e)}")
         return None
 
-def calculate_rsi(prices: pd.Series, periods: int = 14) -> pd.Series:
-    """Calculate Relative Strength Index."""
+def calculate_rsi(prices: pd.Series, periods: int = 14) -> pd.Series: #Calculate Relative Strength Index.
     delta = prices.diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=periods).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=periods).mean()
@@ -62,53 +55,42 @@ def calculate_rsi(prices: pd.Series, periods: int = 14) -> pd.Series:
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
-def get_stock_score(prediction: float, confidence: float) -> float:
-    """
-    Calculate a composite score for stock recommendation.
-    
-    Args:
-        prediction (float): Model's prediction value
-        confidence (float): Confidence score of the prediction
-    
-    Returns:
-        float: Composite score between 0 and 1
-    """
+def get_stock_score(prediction: float, confidence: float) -> float: #Calculate a composite score for stock recommendation.
+
+  
     # Combine prediction and confidence into a single score
     score = (prediction * 0.7) + (confidence * 0.3)
     return max(0, min(1, score))  # Clamp between 0 and 1
 
-def recommend_stocks(model, tickers):
+def recommend_stocks(tickers):  # recommend stock for specific ticker
+    if model_service.model is None:
+        print("Model not available")
+        return []
+        
     recommendations = []
-    
     for ticker in tickers:
         try:
             print(f"Processing ticker: {ticker}")
             
-            # Fetch stock data
             stock_data = fetch_historical_data(ticker)
             if stock_data.empty:
-                print(f"No data available for {ticker}")
                 continue
             
-            # Preprocess the data
             processed_data = preprocess_data(stock_data)
             if processed_data is None:
-                print(f"Failed to process data for {ticker}")
                 continue
                 
             print(f"Processed data shape: {processed_data.shape}")
             
-            # Make prediction
             with torch.no_grad():
                 try:
-                    prediction = model(processed_data)
+                    prediction = model_service.model(processed_data)  # Use model from service
                     raw_score = prediction.item()
                     score = torch.sigmoid(prediction).item()
                     print(f"Raw prediction for {ticker}: {raw_score}")
                     print(f"Sigmoid score for {ticker}: {score}")
                     
-                    # Lower threshold for testing
-                    if score > 0.3:  # Lowered from 0.5
+                    if score > 0.3:
                         recommendations.append(ticker)
                         print(f"Added {ticker} to recommendations with score {score}")
                     else:
@@ -125,16 +107,8 @@ def recommend_stocks(model, tickers):
     print(f"Final recommendations: {recommendations}")
     return recommendations
 
-def generate_recommendation_summary(recommendations: List[Tuple[str, float]]) -> str:
-    """
-    Generate a summary of stock recommendations.
-    
-    Args:
-        recommendations (List[Tuple[str, float]]): List of recommendations with scores
-    
-    Returns:
-        str: Formatted summary string
-    """
+def generate_recommendation_summary(recommendations: List[Tuple[str, float]]) -> str:  # Generate a summary of stock recommendations.
+
     if not recommendations:
         return "No stocks meet the recommendation criteria at this time."
     
